@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Button, TextField } from "@mui/material";
+import { Button, FormControlLabel, TextField } from "@mui/material";
 import { getFontColor } from "../utils";
 
 export const Container = styled.div`
@@ -46,5 +46,32 @@ export const StyledInput = styled(TextField)<{ helpercolor?: string; hidetext?: 
   .MuiFormHelperText-root {
     color: ${({ helpercolor, theme }) => helpercolor || getFontColor(theme.secondary)};
     opacity: 0.8;
+  }
+`;
+
+export const RecurrenceSwitchLabel = styled(FormControlLabel)`
+  margin: 12px 12px 0;
+  width: 400px;
+  justify-content: space-between;
+  margin-right: 12px;
+  color: ${({ theme }) => getFontColor(theme.secondary)};
+`;
+
+export const RecurrencePanel = styled.div`
+  width: 400px;
+  max-width: 100%;
+  margin: 12px;
+  & .MuiOutlinedInput-root,
+  & .MuiFormControl-root {
+    width: 100%;
+    border-radius: 16px;
+    color: ${({ theme }) => getFontColor(theme.secondary)};
+  }
+  & .MuiInputLabel-root,
+  & .MuiSvgIcon-root {
+    color: ${({ theme }) => getFontColor(theme.secondary)};
+  }
+  & .MuiTextField-root {
+    margin: 0;
   }
 `;

@@ -34,6 +34,8 @@ export interface User {
   lastSyncedAt?: Date;
 }
 
+export type RecurrenceFrequency = "Daily" | "Weekly" | "Monthly" | "Yearly";
+
 /**
  * Represents a task in the application.
  */
@@ -57,6 +59,13 @@ export interface Task {
    * Optional numeric position for drag-and-drop (for p2p sync)
    */
   position?: number;
+  /**
+   * Recurrence metadata, present only when the task was created as recurring (ISO 8601 dates)
+   */
+  isRecurring?: boolean;
+  frequency?: RecurrenceFrequency;
+  startDate?: string;
+  endDate?: string;
 }
 
 /**
