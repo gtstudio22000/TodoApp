@@ -32,6 +32,7 @@ import InputThemeProvider from "../contexts/InputThemeProvider";
 import { CategorySelect } from "../components/CategorySelect";
 import { useToasterStore } from "react-hot-toast";
 
+const RECURRENCE_PANEL_ID = "recurrence-panel";
 const RECURRENCE_FREQUENCIES: RecurrenceFrequency[] = ["Daily", "Weekly", "Monthly", "Yearly"];
 
 const AddTask = () => {
@@ -254,10 +255,11 @@ const AddTask = () => {
               <Switch
                 checked={isRecurring}
                 onChange={(_, checked) => handleRecurringChange(checked)}
+                slotProps={{ input: { "aria-controls": RECURRENCE_PANEL_ID } }}
               />
             }
           />
-          <Collapse in={isRecurring} timeout={200} unmountOnExit>
+          <Collapse id={RECURRENCE_PANEL_ID} in={isRecurring} timeout={200} unmountOnExit>
             <RecurrencePanel>
               <Stack direction="column" spacing={2}>
                 <FormControl>

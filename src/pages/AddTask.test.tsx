@@ -79,18 +79,14 @@ describe("Recurrence toggle on the Add Task page", () => {
     await user.click(await screen.findByRole("option", { name: "Monthly" }));
     await user.type(screen.getByLabelText("Start date"), "2025-08-01");
     await user.type(screen.getByLabelText("End date"), "2025-12-31");
-    expect((screen.getByLabelText("Start date") as HTMLInputElement).value).toBe(
-      "2025-08-01",
-    );
+    expect((screen.getByLabelText("Start date") as HTMLInputElement).value).toBe("2025-08-01");
 
     await user.click(getToggle());
     await waitFor(() => expect(queryPanelControl()).toBeNull());
 
     // Turning it back ON shows empty values: the state was cleared, not just hidden.
     await user.click(getToggle());
-    expect(
-      ((await screen.findByLabelText("Start date")) as HTMLInputElement).value,
-    ).toBe("");
+    expect(((await screen.findByLabelText("Start date")) as HTMLInputElement).value).toBe("");
     expect((screen.getByLabelText("End date") as HTMLInputElement).value).toBe("");
     expect(screen.getByRole("combobox", { name: /frequency/i }).textContent).not.toContain(
       "Monthly",
@@ -161,5 +157,61 @@ describe("Recurrence metadata is persisted on submit", () => {
     for (const key of ["isRecurring", "frequency", "startDate", "endDate"]) {
       expect(Object.hasOwn(tasks[0], key)).toBe(false);
     }
+  });
+});
+
+describe("NFR-02: recurrence controls are keyboard and screen-reader accessible", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
+  it("Toggle references the recurrence panel when OFF", () => {
+    renderAddTask();
+
+    expect(getToggle().getAttribute("aria-controls")).toBe("recurrence-panel");
+    // The panel is unmounted while OFF, so nothing is exposed for the toggle to control yet.
+    expect(document.getElementById("recurrence-panel")).toBeNull();
+  });
+
+  it("Toggle references the recurrence panel when ON", async () => {
+    const user = userEvent.setup();
+    renderAddTask();
+
+    await user.click(getToggle());
+
+    const panel = await screen
+      .findByRole("combobox", { name: /frequency/i })
+      .then((control) => control.closest("#recurrence-panel"));
+    expect(getToggle().getAttribute("aria-controls")).toBe("recurrence-panel");
+    expect(panel).toBe(document.getElementById("recurrence-panel"));
+    expect(panel).not.toBeNull();
+  });
+
+  it("Tab focuses the toggle and Space turns it ON", async () => {
+    const user = userEvent.setup();
+    renderAddTask();
+
+    // Tab through the page until the recurrence toggle has focus.
+    for (let i = 0; i < 20 && document.activeElement !== getToggle(); i++) {
+      await user.tab();
+    }
+    expect(document.activeElement).toBe(getToggle());
+
+    await user.keyboard(" ");
+
+    expect((getToggle() as HTMLInputElement).checked).toBe(true);
+    expect(await screen.findByRole("combobox", { name: /frequency/i })).toBeTruthy();
+  });
+
+  it("Panel controls keep their visible labels as accessible names", async () => {
+    const user = userEvent.setup();
+    renderAddTask();
+
+    await user.click(getToggle());
+
+    expect(await screen.findByRole("combobox", { name: "Frequency" })).toBeTruthy();
+    expect(screen.getByLabelText("Start date")).toBeTruthy();
+    expect(screen.getByLabelText("End date")).toBeTruthy();
+    expect(document.querySelector("#recurrence-panel")).not.toBeNull();
   });
 });
