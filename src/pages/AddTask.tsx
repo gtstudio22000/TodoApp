@@ -1,9 +1,26 @@
-import { Category, Task } from "../types/user";
+import { Category, RecurrenceFrequency, Task } from "../types/user";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AddTaskButton, Container, StyledInput } from "../styles";
+import {
+  AddTaskButton,
+  Container,
+  RecurrenceSwitchLabel,
+  RecurrencePanel,
+  StyledInput,
+} from "../styles";
 import { AddTaskRounded, CancelRounded } from "@mui/icons-material";
-import { IconButton, InputAdornment, Tooltip } from "@mui/material";
+import {
+  Collapse,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  Switch,
+  Tooltip,
+} from "@mui/material";
 import { DESCRIPTION_MAX_LENGTH, TASK_NAME_MAX_LENGTH } from "../constants";
 import { ColorPicker, TopBar, CustomEmojiPicker } from "../components";
 import { UserContext } from "../contexts/UserContext";
@@ -14,6 +31,8 @@ import { ColorPalette } from "../theme/themeConfig";
 import InputThemeProvider from "../contexts/InputThemeProvider";
 import { CategorySelect } from "../components/CategorySelect";
 import { useToasterStore } from "react-hot-toast";
+
+const RECURRENCE_FREQUENCIES: RecurrenceFrequency[] = ["Daily", "Weekly", "Monthly", "Yearly"];
 
 const AddTask = () => {
   const { user, setUser } = useContext(UserContext);
@@ -34,6 +53,11 @@ const AddTask = () => {
     "categories",
     "sessionStorage",
   );
+
+  const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [frequency, setFrequency] = useState<RecurrenceFrequency | "">("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
   const [isDeadlineFocused, setIsDeadlineFocused] = useState<boolean>(false);
 
@@ -85,6 +109,15 @@ const AddTask = () => {
     setDeadline(event.target.value);
   };
 
+  const handleRecurringChange = (checked: boolean) => {
+    setIsRecurring(checked);
+    if (!checked) {
+      setFrequency("");
+      setStartDate("");
+      setEndDate("");
+    }
+  };
+
   const handleAddTask = () => {
     if (name === "") {
       showToast("Task name is required.", {
@@ -111,6 +144,9 @@ const AddTask = () => {
       date: new Date(),
       deadline: deadline !== "" ? new Date(deadline) : undefined,
       category: selectedCategories ? selectedCategories : [],
+      ...(isRecurring && frequency !== ""
+        ? { isRecurring: true, frequency, startDate, endDate }
+        : {}),
     };
 
     setUser((prevUser) => ({
@@ -211,6 +247,51 @@ const AddTask = () => {
               },
             }}
           />
+
+          <RecurrenceSwitchLabel
+            label="Recurring task"
+            control={
+              <Switch
+                checked={isRecurring}
+                onChange={(_, checked) => handleRecurringChange(checked)}
+              />
+            }
+          />
+          <Collapse in={isRecurring} timeout={200} unmountOnExit>
+            <RecurrencePanel>
+              <Stack direction="column" spacing={2}>
+                <FormControl>
+                  <InputLabel id="recurrence-frequency-label">Frequency</InputLabel>
+                  <Select
+                    labelId="recurrence-frequency-label"
+                    label="Frequency"
+                    value={frequency}
+                    onChange={(e) => setFrequency(e.target.value as RecurrenceFrequency)}
+                  >
+                    {RECURRENCE_FREQUENCIES.map((f) => (
+                      <MenuItem key={f} value={f}>
+                        {f}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <StyledInput
+                  label="Start date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                />
+                <StyledInput
+                  label="End date"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                />
+              </Stack>
+            </RecurrencePanel>
+          </Collapse>
 
           {user.settings.enableCategories !== undefined && user.settings.enableCategories && (
             <div style={{ marginBottom: "14px" }}>
