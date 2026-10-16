@@ -41,3 +41,11 @@ Feature: Recurrence Toggle on Task Creation Form
     Then the user is taken back to the task list
     And the task 'Buy groceries' is added to the task list
     And the task record has no recurrence flag, no frequency, no start date, and no end date stored
+
+  Scenario: Recurrence options panel stacks vertically on narrow viewports
+    Given the user is viewing the TodoApp on a viewport of 320px width
+    And the user opens the Add Task page
+    When the user turns the recurrence toggle ON
+    Then the recurrence options panel is visible without horizontal overflow
+    And the frequency selector, start date picker, and end date picker stack vertically below the toggle
+    And all controls are reachable and operable without horizontal scrolling

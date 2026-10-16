@@ -50,17 +50,21 @@ export const StyledInput = styled(TextField)<{ helpercolor?: string; hidetext?: 
 `;
 
 export const RecurrenceSwitchLabel = styled(FormControlLabel)`
-  margin: 12px 12px 0;
-  width: 400px;
+  margin: 12px 0 0;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
   justify-content: space-between;
-  margin-right: 12px;
   color: ${({ theme }) => getFontColor(theme.secondary)};
 `;
 
 export const RecurrencePanel = styled.div`
-  width: 400px;
-  max-width: 100%;
-  margin: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin: 12px 0;
+  & .MuiTextField-root .MuiOutlinedInput-root,
   & .MuiOutlinedInput-root,
   & .MuiFormControl-root {
     width: 100%;
