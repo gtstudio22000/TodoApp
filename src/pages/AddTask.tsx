@@ -254,7 +254,6 @@ const AddTask = () => {
               <Switch
                 checked={isRecurring}
                 onChange={(_, checked) => handleRecurringChange(checked)}
-                slotProps={{ input: { "aria-label": "Recurring task toggle" } }}
               />
             }
           />
@@ -281,20 +280,14 @@ const AddTask = () => {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  slotProps={{
-                    inputLabel: { shrink: true },
-                    htmlInput: { "aria-label": "Recurrence start date" },
-                  }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                 />
                 <StyledInput
                   label="End date"
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  slotProps={{
-                    inputLabel: { shrink: true },
-                    htmlInput: { "aria-label": "Recurrence end date" },
-                  }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                 />
               </Stack>
             </RecurrencePanel>

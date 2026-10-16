@@ -33,7 +33,7 @@ const renderAddTask = () =>
     </MemoryRouter>,
   );
 
-const getToggle = () => screen.getByRole("checkbox", { name: "Recurring task toggle" });
+const getToggle = () => screen.getByRole("checkbox", { name: "Recurring task" });
 const queryPanelControl = () => screen.queryByRole("combobox", { name: /frequency/i });
 
 describe("Recurrence toggle on the Add Task page", () => {
@@ -47,8 +47,8 @@ describe("Recurrence toggle on the Add Task page", () => {
     expect(getToggle()).toBeTruthy();
     expect((getToggle() as HTMLInputElement).checked).toBe(false);
     await waitFor(() => expect(queryPanelControl()).toBeNull());
-    expect(screen.queryByLabelText("Recurrence start date")).toBeNull();
-    expect(screen.queryByLabelText("Recurrence end date")).toBeNull();
+    expect(screen.queryByLabelText("Start date")).toBeNull();
+    expect(screen.queryByLabelText("End date")).toBeNull();
   });
 
   it("Toggling ON reveals recurrence options", async () => {
@@ -59,8 +59,8 @@ describe("Recurrence toggle on the Add Task page", () => {
 
     const frequency = await screen.findByRole("combobox", { name: /frequency/i });
     expect(frequency).toBeTruthy();
-    expect(screen.getByLabelText("Recurrence start date")).toBeTruthy();
-    expect(screen.getByLabelText("Recurrence end date")).toBeTruthy();
+    expect(screen.getByLabelText("Start date")).toBeTruthy();
+    expect(screen.getByLabelText("End date")).toBeTruthy();
 
     await user.click(frequency);
     const options = within(await screen.findByRole("listbox")).getAllByRole("option");
@@ -74,9 +74,9 @@ describe("Recurrence toggle on the Add Task page", () => {
     await user.click(getToggle());
     await user.click(await screen.findByRole("combobox", { name: /frequency/i }));
     await user.click(await screen.findByRole("option", { name: "Monthly" }));
-    await user.type(screen.getByLabelText("Recurrence start date"), "2025-08-01");
-    await user.type(screen.getByLabelText("Recurrence end date"), "2025-12-31");
-    expect((screen.getByLabelText("Recurrence start date") as HTMLInputElement).value).toBe(
+    await user.type(screen.getByLabelText("Start date"), "2025-08-01");
+    await user.type(screen.getByLabelText("End date"), "2025-12-31");
+    expect((screen.getByLabelText("Start date") as HTMLInputElement).value).toBe(
       "2025-08-01",
     );
 
@@ -86,9 +86,9 @@ describe("Recurrence toggle on the Add Task page", () => {
     // Turning it back ON shows empty values: the state was cleared, not just hidden.
     await user.click(getToggle());
     expect(
-      ((await screen.findByLabelText("Recurrence start date")) as HTMLInputElement).value,
+      ((await screen.findByLabelText("Start date")) as HTMLInputElement).value,
     ).toBe("");
-    expect((screen.getByLabelText("Recurrence end date") as HTMLInputElement).value).toBe("");
+    expect((screen.getByLabelText("End date") as HTMLInputElement).value).toBe("");
     expect(screen.getByRole("combobox", { name: /frequency/i }).textContent).not.toContain(
       "Monthly",
     );
