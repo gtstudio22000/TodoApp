@@ -255,7 +255,9 @@ const AddTask = () => {
               <Switch
                 checked={isRecurring}
                 onChange={(_, checked) => handleRecurringChange(checked)}
-                slotProps={{ input: { "aria-controls": RECURRENCE_PANEL_ID } }}
+                slotProps={{
+                  input: { "aria-controls": isRecurring ? RECURRENCE_PANEL_ID : undefined },
+                }}
               />
             }
           />

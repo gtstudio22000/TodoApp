@@ -165,11 +165,11 @@ describe("NFR-02: recurrence controls are keyboard and screen-reader accessible"
     sessionStorage.clear();
   });
 
-  it("Toggle references the recurrence panel when OFF", () => {
+  it("Toggle references no panel while OFF", () => {
     renderAddTask();
 
-    expect(getToggle().getAttribute("aria-controls")).toBe("recurrence-panel");
-    // The panel is unmounted while OFF, so nothing is exposed for the toggle to control yet.
+    // The panel is unmounted while OFF, so aria-controls must not point at a missing id.
+    expect(getToggle().hasAttribute("aria-controls")).toBe(false);
     expect(document.getElementById("recurrence-panel")).toBeNull();
   });
 
