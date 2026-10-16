@@ -5,6 +5,9 @@ import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "@emotion/react";
 import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
 import AddTask from "./AddTask";
+import { UserContext } from "../contexts/UserContext";
+import { defaultUser } from "../constants/defaultUser";
+import type { User } from "../types/user";
 
 vi.mock("../components", () => ({
   ColorPicker: () => null,
@@ -92,5 +95,71 @@ describe("Recurrence toggle on the Add Task page", () => {
     expect(screen.getByRole("combobox", { name: /frequency/i }).textContent).not.toContain(
       "Monthly",
     );
+  });
+});
+
+describe("Recurrence metadata is persisted on submit", () => {
+  const renderWithUser = () => {
+    const setUser = vi.fn();
+    render(
+      <MemoryRouter>
+        <MuiThemeProvider theme={createTheme()}>
+          <ThemeProvider theme={emotionTheme}>
+            <UserContext.Provider value={{ user: defaultUser, setUser }}>
+              <AddTask />
+            </UserContext.Provider>
+          </ThemeProvider>
+        </MuiThemeProvider>
+      </MemoryRouter>,
+    );
+    return setUser;
+  };
+
+  const savedUser = (setUser: ReturnType<typeof vi.fn>): User => {
+    expect(setUser).toHaveBeenCalledTimes(1);
+    const updater = setUser.mock.calls[0][0] as (prev: User) => User;
+    return updater({ ...defaultUser, tasks: [] });
+  };
+
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
+  it("Happy path — recurring task is saved with correct metadata", async () => {
+    const user = userEvent.setup();
+    const setUser = renderWithUser();
+
+    await user.type(screen.getByLabelText(/^Task Name/), "Weekly team standup");
+    await user.click(getToggle());
+    await user.click(await screen.findByRole("combobox", { name: /frequency/i }));
+    await user.click(await screen.findByRole("option", { name: "Weekly" }));
+    await user.type(screen.getByLabelText("Start date"), "2025-08-04");
+    await user.type(screen.getByLabelText("End date"), "2025-12-29");
+    await user.click(screen.getByRole("button", { name: "Create Task" }));
+
+    const { tasks } = savedUser(setUser);
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0]).toMatchObject({
+      name: "Weekly team standup",
+      isRecurring: true,
+      frequency: "Weekly",
+      startDate: "2025-08-04",
+      endDate: "2025-12-29",
+    });
+  });
+
+  it("One-time task saved without recurrence metadata", async () => {
+    const user = userEvent.setup();
+    const setUser = renderWithUser();
+
+    await user.type(screen.getByLabelText(/^Task Name/), "Buy groceries");
+    await user.click(screen.getByRole("button", { name: "Create Task" }));
+
+    const { tasks } = savedUser(setUser);
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].name).toBe("Buy groceries");
+    for (const key of ["isRecurring", "frequency", "startDate", "endDate"]) {
+      expect(Object.hasOwn(tasks[0], key)).toBe(false);
+    }
   });
 });
