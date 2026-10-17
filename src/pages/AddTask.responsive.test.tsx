@@ -96,4 +96,18 @@ describe("Recurrence options panel stacks vertically on narrow viewports", () =>
       expect(getComputedStyle(root).width).toBe("100%");
     }
   });
+
+  it("Recurrence controls are spaced with flex gap so nothing exceeds 320px", async () => {
+    const { frequency, panel } = await openRecurrencePanel();
+
+    const stack = frequency.closest<HTMLElement>(".MuiStack-root");
+    if (!stack || !panel.contains(stack)) throw new Error("Recurrence stack not found");
+    const styles = getComputedStyle(stack);
+    expect(styles.display).toBe("flex");
+    expect(styles.flexDirection).toBe("column");
+    expect(styles.gap).toBe("16px");
+    for (const child of stack.children) {
+      expect(getComputedStyle(child).marginTop).not.toBe("16px");
+    }
+  });
 });
