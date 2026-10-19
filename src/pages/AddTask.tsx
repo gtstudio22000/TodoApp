@@ -6,6 +6,7 @@ import {
   Container,
   RecurrenceSwitchLabel,
   RecurrencePanel,
+  FieldWrapper,
   StyledInput,
 } from "../styles";
 import { AddTaskRounded, CancelRounded } from "@mui/icons-material";
@@ -261,7 +262,13 @@ const AddTask = () => {
               />
             }
           />
-          <Collapse id={RECURRENCE_PANEL_ID} in={isRecurring} timeout={200} unmountOnExit>
+          <Collapse
+            id={RECURRENCE_PANEL_ID}
+            in={isRecurring}
+            timeout={200}
+            unmountOnExit
+            sx={{ width: "100%", maxWidth: "400px" }}
+          >
             <RecurrencePanel>
               <Stack direction="column" spacing={2} useFlexGap>
                 <FormControl>
@@ -298,25 +305,27 @@ const AddTask = () => {
           </Collapse>
 
           {user.settings.enableCategories !== undefined && user.settings.enableCategories && (
-            <div style={{ marginBottom: "14px" }}>
+            <FieldWrapper style={{ marginBottom: "14px" }}>
               <br />
               <CategorySelect
                 selectedCategories={selectedCategories}
                 onCategoryChange={(categories) => setSelectedCategories(categories)}
-                width="400px"
+                width="100%"
                 fontColor={getFontColor(theme.secondary)}
               />
-            </div>
+            </FieldWrapper>
           )}
         </InputThemeProvider>
-        <ColorPicker
-          color={color}
-          width="400px"
-          onColorChange={(color) => {
-            setColor(color);
-          }}
-          fontColor={getFontColor(theme.secondary)}
-        />
+        <FieldWrapper>
+          <ColorPicker
+            color={color}
+            width="100%"
+            onColorChange={(color) => {
+              setColor(color);
+            }}
+            fontColor={getFontColor(theme.secondary)}
+          />
+        </FieldWrapper>
         <AddTaskButton
           onClick={handleAddTask}
           disabled={
