@@ -28,3 +28,8 @@ dev-dist
 
 # Vite cache
 /.cache
+
+# TurboBA
+.turboba-token
+.env
+.env.local

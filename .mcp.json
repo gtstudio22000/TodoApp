@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "turboba": {
+      "command": "turboba",
+      "args": ["mcp"],
+      "env": {
+        "TURBOBA_URL": "http://localhost:8000",
+        "TURBOBA_TOKEN_FILE": ".turboba-token"
+      }
+    }
+  }
+}
