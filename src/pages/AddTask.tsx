@@ -263,7 +263,7 @@ const AddTask = () => {
           />
           <Collapse id={RECURRENCE_PANEL_ID} in={isRecurring} timeout={200} unmountOnExit>
             <RecurrencePanel>
-              <Stack direction="column" spacing={2}>
+              <Stack direction="column" spacing={2} useFlexGap>
                 <FormControl>
                   <InputLabel id="recurrence-frequency-label">Frequency</InputLabel>
                   <Select
